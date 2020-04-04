@@ -25,6 +25,28 @@ IplImage *image_to_ipl(image im)
     return disp;
 }
 
+void ipl_into_image(IplImage* src, image* dest)
+{
+    int h = src->height;
+    int w = src->width;
+    int c = src->nChannels;
+    assert(dest->h == h);
+    assert(dest->w == w);
+    assert(dest->c == c);
+
+    unsigned char *data = (unsigned char *)src->imageData;
+    int step = src->widthStep;
+    int i, j, k;
+
+    for(i = 0; i < h; ++i){
+        for(k= 0; k < c; ++k){
+            for(j = 0; j < w; ++j){
+                dest->data[k*w*h + i*w + j] = data[i*step + j*c + k]/255.;
+            }
+        }
+    }
+}
+
 image ipl_to_image(IplImage* src)
 {
     int h = src->height;
@@ -60,7 +82,7 @@ Mat image_to_mat(image im)
 
 image mat_to_image(Mat m)
 {
-    IplImage ipl = m;
+    IplImage ipl = cvIplImage(m);
     image im = ipl_to_image(&ipl);
     rgbgr_image(im);
     return im;
