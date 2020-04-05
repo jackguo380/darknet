@@ -4,6 +4,7 @@
 #include "cuda.h"
 #include <stdio.h>
 #include <math.h>
+#include <stdbool.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -236,7 +237,7 @@ image **load_alphabet()
     return alphabets;
 }
 
-void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes)
+static void _draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, bool print)
 {
     int i,j;
 
@@ -252,7 +253,8 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
                     strcat(labelstr, ", ");
                     strcat(labelstr, names[j]);
                 }
-                printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
+                if (print)
+                    printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
             }
         }
         if(class >= 0){
@@ -307,6 +309,16 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             }
         }
     }
+}
+
+void draw_detections_no_print(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes)
+{
+    _draw_detections(im, dets, num, thresh, names, alphabet, classes, false);
+}
+
+void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes)
+{
+    _draw_detections(im, dets, num, thresh, names, alphabet, classes, true);
 }
 
 void transpose_image(image im)

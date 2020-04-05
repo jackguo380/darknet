@@ -34,6 +34,9 @@ void ipl_into_image(IplImage* src, image* dest)
     assert(dest->w == w);
     assert(dest->c == c);
 
+    if (dest->data == nullptr)
+        dest->data = (float *) calloc(h*w*c, sizeof(float));
+
     unsigned char *data = (unsigned char *)src->imageData;
     int step = src->widthStep;
     int i, j, k;
